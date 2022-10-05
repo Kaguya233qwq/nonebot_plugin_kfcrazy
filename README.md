@@ -1,6 +1,25 @@
-# nonebot_plugin_crazzzy_thur
+<div align="center">
 
-nonebot2肯德基查询插件，输入地区即可查询全国店铺的数据，支持疯狂星期四
+# nonebot_plugin_kfcrazy
+nonebot2肯德基查询插件，输入地区即可查询全国店铺的数据，支持疯狂星期四!
+<div/>
+
+
+
+# 开始使用
+
+克隆本项目到本地，导入包nonebot_plugin_kfcrazy（暂定）
+
+## 使用命令来触发
+
+在有bot的群内发送`/kfc`开始查询肯德基的物品详情
+
+## TODO？
+
+* [ ]  增加疯狂星期四查询命令
+* [ ]  增加qq号绑定店铺一键查询
+* [ ]  疯四文案与图片合成
+* [ ]  （待定。。）
 
 # 效果展示
 
@@ -8,10 +27,8 @@ nonebot2肯德基查询插件，输入地区即可查询全国店铺的数据，
 ![](.README_images/a6ee4450.png)
 ![](.README_images/69a1eae9.png)
 
-# 5个star解锁完整项目！！项目完全免费，但我只是希望你们不要白嫖doge
+## **联系我**
 
-## **5个star解锁完整项目！5个star解锁完整项目！不能再低了！**
-
-有问题联系我：qq：1435608435
-
-### 活动仅剩2天啦！请您动动您的手指点个star项目立即解锁！
+<p align="center">
+  <a href="https://github.com/"><img src="https://github.com/Kaguya233qwq/nonebot_plugin_alicdk_get/blob/main/.README_images/17623ac4.png?raw=true" width="300" height="350" alt="QRCode"></a>
+</p>
