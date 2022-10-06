@@ -78,7 +78,7 @@ class KFC:
             city_code: str,
             mylng: str,
             mylat: str
-    ) -> tuple[str, list]:
+    ):
         """根据城市id、经纬度查询店铺名字的列表以及对应id"""
         async with httpx.AsyncClient() as client:
             data = {
