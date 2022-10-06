@@ -1,8 +1,12 @@
 <div align="center">
 
-# nonebot_plugin_kfcrazy
+<p align="center">
+  <a href=""><img src="https://i-1-lanrentuku.52tup.com/2020/11/9/9d447b9c-5d19-4706-835b-368f2cb49869.png?imageView2/2/w/1024/" width="200" height="200" alt="kfc"></a>
+</p>
+
+## nonebot_plugin_kfcrazy
 nonebot2肯德基查询插件，输入地区即可查询全国店铺的数据，支持疯狂星期四!
-<div/>
+</div>
 
 
 
