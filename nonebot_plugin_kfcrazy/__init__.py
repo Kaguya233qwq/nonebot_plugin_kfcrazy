@@ -1,6 +1,5 @@
 import json
 import re
-
 import httpx
 
 from nonebot import on_command, on_keyword
@@ -22,6 +21,7 @@ class KFC:
         self.url_store = "https://orders.kfc.com.cn/preorder-portal/wx/api/store/searchAllByCityCode"
         self.url_session = "https://orders.kfc.com.cn/preorder-portal/wx/api/init/initSession"
         self.url_menu = "https://orders.kfc.com.cn/preorder-portal/wx/api/menu/getMenuByStore"
+        self.url_search = 'https://selectstore.hwwt8.com/store-portal/wx/api/store/searchByCityCodeAndKeyword'
         self.pic_host = 'https://pcp-pic.hwwt8.com'
         self.tencent_map = 'https://apis.map.qq.com/ws/geocoder/v1/'
         self.key = 'RPEBZ-J2ZWW-2CIRC-OO3Q2-HH7X2-7GBEJ'  # 腾讯地图api的后台key
@@ -32,28 +32,28 @@ class KFC:
             'Referer': 'https://servicewechat.com/wx23dde3ba32269caa/280/page-frame.html'
         }
 
-    def get_location(self, keyword: str):
+    async def get_location(self, keyword: str):
         """腾讯地图api 获取地区经纬度"""
         params = {
             'address': keyword,
             'key': self.key
         }
-        resp = httpx.get(
-            url=self.tencent_map,
-            headers=self.headers,
-            params=params
-        )
-        json_str = json.loads(resp.text)
-        if json_str.get('result'):
-            location = json_str['result']['location']
-            lng = location['lng']
-            lat = location['lat']
-            return lng, lat
-        else:
-            return None, None
+        async with httpx.AsyncClient() as client:
+            global Lng, Lat
+            resp = await client.get(
+                url=self.tencent_map,
+                headers=self.headers,
+                params=params
+            )
+            json_str = json.loads(resp.text)
+            if json_str.get('result'):
+                location = json_str['result']['location']
+                Lng = location['lng']
+                Lat = location['lat']
 
     async def get_city_id(self, param_city: str):
-        """根据关键词查询城市或地区对应的id和经纬度"""
+        """根据关键词查询城市或地区对应的id"""
+        global CityCode, DistrictCode, Lng, Lat
         async with httpx.AsyncClient() as client:
             resp = await client.post(
                 url=self.url_city,
@@ -64,45 +64,64 @@ class KFC:
             for city in city_list:
                 city_name = city['cityNameZh']
                 district_name = city['districtName']
-                if param_city in city_name and district_name == '':
-                    return city['cityCode'], \
-                           city['latitude'], \
-                           city['longitude']
-                if param_city in district_name:
-                    lng, lat = self.get_location(param_city)
-                    return city['cityCode'], lat, lng
-            return None, None, None
+                if ' ' not in param_city:
+                    if param_city in city_name and district_name == '':
+                        CityCode = city['cityCode']
+                        DistrictCode = city['districtCode']
+                        Lat = city['latitude']
+                        Lng = city['longitude']
+                        break
+                else:
+                    city_reg = re.findall(
+                        r'([\u4e00-\u9fa5]+) [\u4e00-\u9fa5]+',
+                        param_city)[0]
+                    district_reg = re.findall(
+                        r'[\u4e00-\u9fa5]+ ([\u4e00-\u9fa5]+)',
+                        param_city)[0]
+                    if city_reg in city_name:
+                        if district_reg in district_name:
+                            city_code = city['cityCode']
+                            district_code = city['districtCode']
+                        else:
+                            city_code = city['cityCode']
+                            district_code = ''
+                        CityCode = city_code
+                        DistrictCode = district_code
+                        break
 
-    async def get_store_list(
+    async def search_store(
             self,
+            keyword: str,
             city_code: str,
-            mylng: str,
-            mylat: str
+            district_code: str = '',
+            mylng: str = '',
+            mylat: str = '',
     ):
-        """根据城市id、经纬度查询店铺名字的列表以及对应id"""
-        async with httpx.AsyncClient() as client:
-            data = {
-                'cityCode': city_code,
-                'mylng': mylng,
-                'mylat': mylat
-            }
-            resp = await client.post(
-                url=self.url_store,
-                headers=self.headers,
-                data=data
-            )
-            resp_json = json.loads(resp.text)
-            data_list = resp_json['data']['stores']
-            store_list, i, store_id_list = '', 0, []
-            for store_name in data_list:
-                store_list += str(i) + '.' + \
-                              store_name['storename'] + '\n'
-                store_code = store_name['storecode']
-                store_id_list.append(store_code)
-                i += 1
-            store_list += "----------------\n" \
-                          "Tips：直接发送列表序号的数字即可"
-            return store_list, store_id_list
+        data = {
+            'keyword': keyword,
+            'cityCode': city_code,
+            'districtCode': district_code,
+            'mylng': mylng,
+            'mylat': mylat
+        }
+        resp = httpx.post(
+            url=self.url_search,
+            headers=self.headers,
+            data=data
+        )
+        resp_json = json.loads(resp.text)
+        data_list = resp_json['data']['stores']
+        store_list = '-------店铺-------\n'
+        i, store_id_list = 0, []
+        for store_name in data_list:
+            store_list += str(i) + '.' + \
+                          store_name['storename'] + '\n'
+            store_code = store_name['storecode']
+            store_id_list.append(store_code)
+            i += 1
+        store_list += "----------------\n" \
+                      "Tips：直接发送列表序号的数字即可"
+        return store_list, store_id_list
 
     async def get_cookie(self):
         """获取临时会话的session"""
@@ -131,7 +150,7 @@ class KFC:
             )
             resp_json = json.loads(resp.text)
             menu_detail = resp_json['data']['data']
-            menu_list, i = '', 0
+            menu_list, i = '--------请选择分类--------\n', 0
             for food in menu_detail:
                 food_name = food['nameCn'].replace('BBN', '')
                 menu_list += str(i) + '.' + food_name + '\n'
@@ -144,7 +163,7 @@ class KFC:
         """拿到每种菜单主题下的食物"""
 
         def traversal(lists):
-            food_result = ''
+            food_result = '------菜单来啦！------'
             for food in lists['menuList']:
                 food_name = food['nameCn'].replace('BBN', '')
                 food_name = '✨' + food_name + '✨' + '\n'
@@ -184,24 +203,34 @@ async def kfc_eat(matcher: Matcher, args: Message = CommandArg()):
         matcher.set_arg("city", args)  # 如果用户发送了参数则直接赋值
 
 
-Store = []
 Menu = []
 Food = []
+Store = []
+CityCode = ''
+DistrictCode = ''
+Lng = ''
+Lat = ''
 
 
-@KFC_eat.got("city", prompt="请输入您所在的城市或地区（县）")
+@KFC_eat.got("city", prompt="请输入您所在的城市或城市+空格+地区（县）")
 async def city_handler(city: str = ArgPlainText("city")):
-    global Store
-    city_id, mylat, mylng = await KFC().get_city_id(city)
-    if city_id:
-        store_list, Store = await KFC().get_store_list(
-            city_code=city_id,
-            mylat=mylat,
-            mylng=mylng
-        )
-        await KFC_eat.send(store_list)
-    else:
+    await KFC().get_city_id(city)
+    await KFC().get_location(city)
+    if CityCode == '':
         await KFC_eat.reject('没有相关地区信息，请重新输入！')
+
+
+@KFC_eat.got("keyword", prompt="请输入您要查询的店铺的关键词（若为空格符，则列出全部信息）")
+async def keyword_handler(keyword: str = ArgPlainText("keyword")):
+    global Store
+    store_list, Store = await KFC().search_store(
+        keyword=keyword,
+        city_code=CityCode,
+        district_code=DistrictCode,
+        mylng=Lng,
+        mylat=Lat
+    )
+    await KFC_eat.send(store_list)
 
 
 @KFC_eat.got("store")
