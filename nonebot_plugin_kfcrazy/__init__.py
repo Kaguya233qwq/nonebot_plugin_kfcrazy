@@ -163,7 +163,7 @@ class KFC:
         """拿到每种菜单主题下的食物"""
 
         def traversal(lists):
-            food_result = '------菜单来啦！------'
+            food_result = '------菜单来啦！------\n'
             for food in lists['menuList']:
                 food_name = food['nameCn'].replace('BBN', '')
                 food_name = '✨' + food_name + '✨' + '\n'
@@ -214,6 +214,8 @@ Lat = ''
 
 @KFC_eat.got("city", prompt="请输入您所在的城市或城市+空格+地区（县）")
 async def city_handler(city: str = ArgPlainText("city")):
+    if '退出' in city:
+        await KFC_eat.finish('退出查询成功')
     await KFC().get_city_id(city)
     await KFC().get_location(city)
     if CityCode == '':
@@ -223,6 +225,8 @@ async def city_handler(city: str = ArgPlainText("city")):
 @KFC_eat.got("keyword", prompt="请输入您要查询的店铺的关键词（若为空格符，则列出全部信息）")
 async def keyword_handler(keyword: str = ArgPlainText("keyword")):
     global Store
+    if '退出' in keyword:
+        await KFC_eat.finish('退出查询成功')
     store_list, Store = await KFC().search_store(
         keyword=keyword,
         city_code=CityCode,
@@ -238,7 +242,7 @@ async def store_handler(store: str = ArgPlainText("store")):
     global Store, Menu, Food
     if '退出' in store:
         await KFC_eat.finish('退出查询成功')
-    if not re.match('[0-99]?', store):
+    if not re.match('^[0-{}]*$'.format(len(Store)-1), store):
         await KFC_eat.reject('您输入的序号有误，请重新输入')
     else:
         store_id = Store[int(store)]
@@ -251,7 +255,7 @@ async def food_handler(food: str = ArgPlainText("food")):
     global Food
     if '退出' in food:
         await KFC_eat.finish('退出查询成功')
-    if not re.match('[0-99]?', food):
+    if not re.match('^[0-{}]*$'.format(len(Food)-1), food):
         await KFC_eat.reject('您输入的序号有误，请重新输入')
     else:
         food_results = await KFC().get_food(Food, int(food))
