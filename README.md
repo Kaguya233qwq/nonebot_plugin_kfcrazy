@@ -12,9 +12,14 @@ nonebot2肯德基查询插件，输入地区即可查询全国店铺的数据，
 
 # 开始使用
 
+使用pip安装：
+
+`pip install nonebot-plugin-kfcrazy`
+
 克隆本项目到本地，在bot.py中导入插件：
 
 `nonebot.load_plugin(r"包路径\nonebot_plugin_kfcrazy")`
+
 
 ## 使用命令来触发
 
