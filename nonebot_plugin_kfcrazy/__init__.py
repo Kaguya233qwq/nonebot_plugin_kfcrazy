@@ -1,9 +1,11 @@
 import json
 import re
+from typing import List, Dict, Union
+
 import httpx
 
 from nonebot import on_command, on_keyword, logger
-from nonebot.adapters.onebot.v11 import Message, MessageSegment
+from nonebot.adapters.onebot.v11 import Message, MessageSegment, Bot, GroupMessageEvent as G
 from nonebot.adapters.onebot.v11.exception import ActionFailed
 from nonebot.internal.matcher import Matcher
 from nonebot.internal.params import ArgPlainText
@@ -164,7 +166,7 @@ class KFC:
         """拿到每种菜单主题下的食物"""
 
         def traversal(lists):
-            food_result = '------菜单来啦！------\n'
+            food_result = MessageSegment.text('------菜单来啦！------\n')
             for food in lists['menuList']:
                 food_name = food['nameCn'].replace('BBN', '')
                 food_name = '✨' + food_name + '✨' + '\n'
@@ -181,14 +183,14 @@ class KFC:
                 img = MessageSegment.image(
                     self.pic_host + img_url
                 )
-                food_result += food_name
-                food_result += detail + price_str + img
-                food_result += '-----------------\n'
+                food_result += MessageSegment.text(food_name)
+                food_result += MessageSegment.text(detail + price_str) + img
+                food_result += MessageSegment.text('-----------------\n')
             return food_result
 
         menu = menu_detail[number]
         if menu.get('childClassList'):
-            food_result_ = ''
+            food_result_ = MessageSegment.text('')
             for lists_ in menu['childClassList']:
                 food_result_ += traversal(lists_)
             return food_result_
@@ -202,6 +204,7 @@ async def kfc_eat(matcher: Matcher, args: Message = CommandArg()):
     plain_text = args.extract_plain_text()
     if plain_text:
         matcher.set_arg("city", args)  # 如果用户发送了参数则直接赋值
+
 
 # 全局变量
 Menu = []
@@ -243,7 +246,7 @@ async def store_handler(store: str = ArgPlainText("store")):
     global Store, Menu, Food
     if '退出' in store:
         await KFC_eat.finish('退出查询成功')
-    if re.match('^[0-9]*$', store) and 0 <= int(store) <= len(Store)-1:
+    if re.match('^[0-9]*$', store) and 0 <= int(store) <= len(Store) - 1:
         store_id = Store[int(store)]
         menu_list, Food = await KFC().get_menu(store_id)
         await KFC_eat.send(menu_list)
@@ -252,19 +255,41 @@ async def store_handler(store: str = ArgPlainText("store")):
 
 
 @KFC_eat.got("food")
-async def food_handler(food: str = ArgPlainText("food")):
+async def food_handler(event: G, bot: Bot, food: str = ArgPlainText("food")):
     global Food
     try:
         if '退出' in food:
             await KFC_eat.finish('退出查询成功')
-        if re.match('^[0-9]*$', food) and 0 <= int(food) <= len(Food)-1:
+        if re.match('^[0-9]*$', food) and 0 <= int(food) <= len(Food) - 1:
             food_results = await KFC().get_food(Food, int(food))
-            await KFC_eat.finish(food_results)
+            # await KFC_eat.finish(food_results)
+            chain = await chain_reply(bot, food_results)
+            await bot.send_group_forward_msg(
+                group_id=event.group_id,
+                messages=chain
+            )
         else:
             await KFC_eat.reject('您输入的序号有误，请重新输入')
     except ActionFailed as a:
         logger.warning('消息发送失败。可能由于内容过长被风控')
         await KFC_eat.finish('%s :消息发送失败。可能由于内容过长被风控' % a.info.get('msg'))
 
+
+async def chain_reply(
+        # 构造聊天记录转发消息，参照了塔罗牌插件
+        bot: Bot,
+        msg: MessageSegment
+):
+    chain = []
+    data = {
+        "type": "node",
+        "data": {
+            "name": "橙子bot",
+            "uin": f"{bot.self_id}",
+            "content": msg
+        },
+    }
+    chain.append(data)
+    return chain
 # @Crazy_cmd.handle()
 # async def
