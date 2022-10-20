@@ -2,8 +2,9 @@ import json
 import re
 import httpx
 
-from nonebot import on_command, on_keyword
+from nonebot import on_command, on_keyword, logger
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
+from nonebot.adapters.onebot.v11.exception import ActionFailed
 from nonebot.internal.matcher import Matcher
 from nonebot.internal.params import ArgPlainText
 from nonebot.params import CommandArg
@@ -202,7 +203,7 @@ async def kfc_eat(matcher: Matcher, args: Message = CommandArg()):
     if plain_text:
         matcher.set_arg("city", args)  # 如果用户发送了参数则直接赋值
 
-
+# 全局变量
 Menu = []
 Food = []
 Store = []
@@ -222,7 +223,7 @@ async def city_handler(city: str = ArgPlainText("city")):
         await KFC_eat.reject('没有相关地区信息，请重新输入！')
 
 
-@KFC_eat.got("keyword", prompt="请输入您要查询的店铺的关键词（若为空格符，则列出全部信息）")
+@KFC_eat.got("keyword", prompt="请输入您要查询的店铺的关键词（若为空格符，则列出部分信息）")
 async def keyword_handler(keyword: str = ArgPlainText("keyword")):
     global Store
     if '退出' in keyword:
@@ -242,24 +243,28 @@ async def store_handler(store: str = ArgPlainText("store")):
     global Store, Menu, Food
     if '退出' in store:
         await KFC_eat.finish('退出查询成功')
-    if not re.match('^[0-{}]*$'.format(len(Store)-1), store):
-        await KFC_eat.reject('您输入的序号有误，请重新输入')
-    else:
+    if re.match('^[0-9]*$', store) and 0 <= int(store) <= len(Store)-1:
         store_id = Store[int(store)]
         menu_list, Food = await KFC().get_menu(store_id)
         await KFC_eat.send(menu_list)
+    else:
+        await KFC_eat.reject('您输入的序号有误，请重新输入')
 
 
 @KFC_eat.got("food")
 async def food_handler(food: str = ArgPlainText("food")):
     global Food
-    if '退出' in food:
-        await KFC_eat.finish('退出查询成功')
-    if not re.match('^[0-{}]*$'.format(len(Food)-1), food):
-        await KFC_eat.reject('您输入的序号有误，请重新输入')
-    else:
-        food_results = await KFC().get_food(Food, int(food))
-        await KFC_eat.finish(food_results)
+    try:
+        if '退出' in food:
+            await KFC_eat.finish('退出查询成功')
+        if re.match('^[0-9]*$', food) and 0 <= int(food) <= len(Food)-1:
+            food_results = await KFC().get_food(Food, int(food))
+            await KFC_eat.finish(food_results)
+        else:
+            await KFC_eat.reject('您输入的序号有误，请重新输入')
+    except ActionFailed as a:
+        logger.warning('消息发送失败。可能由于内容过长被风控')
+        await KFC_eat.finish('%s :消息发送失败。可能由于内容过长被风控' % a.info.get('msg'))
 
 # @Crazy_cmd.handle()
 # async def
