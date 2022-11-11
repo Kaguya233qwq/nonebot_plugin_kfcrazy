@@ -65,11 +65,11 @@ class KFC:
             city_list = resp_json['data']['allCities']
             for city in city_list:
                 city_name = city['cityNameZh']
-                district_name = city['districtName']
+                district_name = city.get('districtName', '')
                 if ' ' not in param_city:
                     if param_city in city_name and district_name == '':
                         CityCode = city['cityCode']
-                        DistrictCode = city['districtCode']
+                        DistrictCode = city.get('districtCode', '')
                         Lat = city['latitude']
                         Lng = city['longitude']
                         break
@@ -117,7 +117,7 @@ class KFC:
         i, store_id_list = 0, []
         for store_name in data_list:
             store_list += str(i) + '.' + \
-                          store_name['storename'] + '\n'
+                store_name['storename'] + '\n'
             store_code = store_name['storecode']
             store_id_list.append(store_code)
             i += 1
