@@ -66,8 +66,12 @@ class KFC:
             for city in city_list:
                 city_name = city['cityNameZh']
                 district_name = city.get('districtName', '')
+                if '市' in param_city:
+                    param_city_ = param_city.replace('市', '')
+                else:
+                    param_city_ = param_city
                 if ' ' not in param_city:
-                    if param_city in city_name and district_name == '':
+                    if param_city_ in city_name and district_name == '':
                         CityCode = city['cityCode']
                         DistrictCode = city.get('districtCode', '')
                         Lat = city['latitude']
@@ -76,10 +80,10 @@ class KFC:
                 else:
                     city_reg = re.findall(
                         r'([\u4e00-\u9fa5]+) [\u4e00-\u9fa5]+',
-                        param_city)[0]
+                        param_city_)[0]
                     district_reg = re.findall(
                         r'[\u4e00-\u9fa5]+ ([\u4e00-\u9fa5]+)',
-                        param_city)[0]
+                        param_city_)[0]
                     if city_reg in city_name:
                         if district_reg in district_name:
                             city_code = city['cityCode']
@@ -117,7 +121,7 @@ class KFC:
         i, store_id_list = 0, []
         for store_name in data_list:
             store_list += str(i) + '.' + \
-                store_name['storename'] + '\n'
+                          store_name['storename'] + '\n'
             store_code = store_name['storecode']
             store_id_list.append(store_code)
             i += 1
@@ -283,7 +287,7 @@ async def chain_reply(
     data = {
         "type": "node",
         "data": {
-            "name": "橙子bot",
+            "name": "v我50",
             "uin": f"{bot.self_id}",
             "content": msg
         },
