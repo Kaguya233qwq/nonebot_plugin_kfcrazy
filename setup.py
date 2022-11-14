@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8", errors="ignore") as f:
     long_description = f.read()
 setuptools.setup(
     name='nonebot-plugin-kfcrazy',
-    version='2.0.4',
+    version='2.0.5',
     author='Kaguya233qwq',
     author_email='1435608435@qq.com',
     keywords=["pip", "nonebot2", "nonebot", "KFC", "v我50", "疯狂星期四", "肯德基"],
