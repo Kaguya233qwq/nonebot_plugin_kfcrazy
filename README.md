@@ -51,16 +51,20 @@ nonebot2肯德基查询插件，输入地区即可查询全国店铺的数据，
 
 ## **联系我**
 
-<p align="center">
-  <a href="https://github.com/"><img src="https://github.com/Kaguya233qwq/nonebot_plugin_alicdk_get/blob/main/.README_images/17623ac4.png?raw=true" width="300" height="350" alt="QRCode"></a>
-</p>
+span
+
+
+
+## 👀️已知问题👀️
+
+目前存在的一个始终无法解决的问题：所有菜单下的的“自在厨房”选项均无法正常发出，原因未知。可能为消息过长风控限制
+
 
 ## 更新日志
 
 2022.11.14 v2.0.5
 
 修复当发送城市名中包含“市”字符时查询不到的问题
-
 
 2022.11.12 v2.0.4
 
