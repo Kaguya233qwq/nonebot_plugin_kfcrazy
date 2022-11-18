@@ -6,7 +6,20 @@
 
 ## nonebot_plugin_kfcrazy
 
-nonebot2肯德基查询插件，输入地区即可查询全国店铺的数据，支持疯狂星期四!
+_✨ 基于 [NoneBot2](https://v2.nonebot.dev/) 的肯德基查询插件 ✨_
+
+<p align="center">
+  <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python">
+  <img src="https://img.shields.io/badge/nonebot-2.0.0b4+-red.svg" alt="NoneBot">
+  <a href="https://pypi.org/project/nonebot-plugin-kfcrazy/">
+    <img src="https://badgen.net/pypi/v/nonebot-plugin-kfcrazy" alt="pypi">
+  </a>
+
+输入地区即可查询全国店铺的数据，支持疯狂星期四!
+
+_“别说了，先v我50”_
+
+
 
 </div>
 
