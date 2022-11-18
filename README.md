@@ -8,9 +8,6 @@
 
 nonebot2肯德基查询插件，输入地区即可查询全国店铺的数据，支持疯狂星期四!
 
-<iframe>
-</iframe>
-
 </div>
 
 
@@ -22,9 +19,7 @@ nonebot2肯德基查询插件，输入地区即可查询全国店铺的数据，
 
 或
 
-2.克隆本项目到本地，在bot.py中导入插件：
-
-`nonebot.load_plugin(r"包路径\nonebot_plugin_kfcrazy")`
+2.克隆本项目到本地，在bot.py中导入插件
 
 ## 使用命令来触发
 
