@@ -10,8 +10,7 @@ nonebot2肯德基查询插件，输入地区即可查询全国店铺的数据，
 
 </div>
 
-<iframe src="//music.163.com/outchain/player?type=2&id=22645196&auto=1&height=66">
-</iframe>
+[![Watch the video](https://raw.github.com/GabLeRoux/WebMole/master/ressources/WebMole_Youtube_Video.png)](http://youtu.be/vt5fpE0bzSY)
 
 # 开始使用
 
