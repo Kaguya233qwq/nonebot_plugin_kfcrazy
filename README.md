@@ -10,15 +10,16 @@ nonebot2肯德基查询插件，输入地区即可查询全国店铺的数据，
 
 </div>
 
-[![Watch the video](https://raw.github.com/GabLeRoux/WebMole/master/ressources/WebMole_Youtube_Video.png)](http://youtu.be/vt5fpE0bzSY)
 
 # 开始使用
 
-使用pip安装：
+1.使用pip安装（推荐）：
 
 `pip install nonebot-plugin-kfcrazy`
 
-克隆本项目到本地，在bot.py中导入插件：
+或
+
+2.克隆本项目到本地，在bot.py中导入插件：
 
 `nonebot.load_plugin(r"包路径\nonebot_plugin_kfcrazy")`
 
@@ -57,11 +58,11 @@ nonebot2肯德基查询插件，输入地区即可查询全国店铺的数据，
   <a href="https://github.com/"><img src="https://github.com/Kaguya233qwq/nonebot_plugin_alicdk_get/blob/main/.README_images/17623ac4.png?raw=true" width="300" height="350" alt="QRCode"></a>
 </p>
 
-
 ## 👀️已知问题👀️
 
 目前存在的一个始终无法解决的问题：所有菜单下的的“自在厨房”选项均无法正常发出，原因未知。可能为消息过长风控限制
 
+[[点我播放] Bad apple](https://music.163.com/outchain/player?type=2&id=22645196&auto=1&height=66)
 
 ## 更新日志
 
