@@ -29,8 +29,8 @@ class KFC:
         self.key = 'RPEBZ-J2ZWW-2CIRC-OO3Q2-HH7X2-7GBEJ'  # 腾讯地图api的后台key
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) '
-                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/'
-                          '53.0.2785.143 Safari/537.36 MicroMessenger/7.0.9.501',
+            'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/'
+            '53.0.2785.143 Safari/537.36 MicroMessenger/7.0.9.501',
             'Referer': 'https://servicewechat.com/wx23dde3ba32269caa/280/page-frame.html'
         }
 
@@ -121,12 +121,12 @@ class KFC:
         i, store_id_list = 0, []
         for store_name in data_list:
             store_list += str(i) + '.' + \
-                          store_name['storename'] + '\n'
+                store_name['storename'] + '\n'
             store_code = store_name['storecode']
             store_id_list.append(store_code)
             i += 1
         store_list += "----------------\n" \
-                      "Tips：直接发送列表序号的数字即可"
+            "Tips：直接发送列表序号的数字即可"
         return store_list, store_id_list
 
     async def get_cookie(self):
@@ -162,7 +162,7 @@ class KFC:
                 menu_list += str(i) + '.' + food_name + '\n'
                 i += 1
             menu_list += "----------------\n" \
-                         "Tips：直接发送列表序号的数字即可"
+                "Tips：直接发送列表序号的数字即可"
             return menu_list, menu_detail
 
     async def get_food(self, menu_detail: list, number: int):
